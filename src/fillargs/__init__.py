@@ -1,7 +1,7 @@
 from functools import wraps
-from autoarg.utils import check_attr, clear_attrs
-from autoarg.arg_handler import ArgsHandler
-from autoarg.env import ArgEnv, getdefault
+from fillargs.utils import check_attr, clear_attrs
+from fillargs.arg_handler import ArgsHandler
+from fillargs.env import ArgEnv, getdefault
 
 
 def fill_function(f=None, reserved_args: dict = None, arg_env: ArgEnv = None):

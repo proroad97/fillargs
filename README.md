@@ -11,7 +11,7 @@ If you are tired to provide the same arguments to a function or method, this lib
 How to handle an single function:
 
 ```python
-from autoarg import fill_function
+from fillargs import fill_function
 
 default_args={"a":1,"b":2,"c":3}
 
@@ -24,8 +24,8 @@ fun(1,2)
 you can pass also a argument environment:
 
 ```python
-from autoarg.env import ArgEnv,getenv
-from autoarg import fill_function
+from fillargs.env import ArgEnv,getenv
+from fillargs import fill_function
 default_args={"a":1,"b":2,"c":3}
 
 env=ArgEnv(default_args={"a":1,"b":2,"d":3},name="arg_env")
@@ -39,8 +39,8 @@ def fun(a,b,c=None,/d=None):
 ```
 In case you dont provide arguments or environment , a default environment created by the user will be used:
 ```python
-from autoarg.env import DefaultEnv
-from autoarg import fill_function
+from fillargs.env import DefaultEnv
+from fillargs import fill_function
 args={"a":1,"b":2}
 default_env=DefaultEnv(args)
 
@@ -52,7 +52,7 @@ def fun(*args,**kwds):
 
 It is possible to handle a instance or a class with the function 'handle_instance':
 ```python
-from autoarg import handle_instance
+from fillargs import handle_instance
 from yourclass import YourClass
 
 instance=YourClass()
