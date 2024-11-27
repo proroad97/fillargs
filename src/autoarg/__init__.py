@@ -1,9 +1,10 @@
 from functools import wraps
-from .arg_handler import ArgsHandler
-from .env import ArgEnv, getdefault
+from autoarg.utils import check_attr, clear_attrs
+from autoarg.arg_handler import ArgsHandler
+from autoarg.env import ArgEnv, getdefault
 
 
-def handle_f(f=None, reserved_args: dict = None, arg_env: ArgEnv = None):
+def fill_function(f=None, reserved_args: dict = None, arg_env: ArgEnv = None):
     def wrapper(f):
         nonlocal reserved_args, arg_env
         if not arg_env:
@@ -22,10 +23,10 @@ def handle_f(f=None, reserved_args: dict = None, arg_env: ArgEnv = None):
     return wrapper
 
 
-def handle_method(instance, f, reserved_args: dict = None, arg_env: ArgEnv = None):
+def fill_method(instance, f, reserved_args: dict = None, arg_env: ArgEnv = None):
     try:
         method = getattr(instance, f)
-        wrapped_method = handle_f(method, reserved_args, arg_env)
+        wrapped_method = fill_function(method, reserved_args, arg_env)
         setattr(instance, method.__name__, wrapped_method)
     except AttributeError as exc:
         raise exc
@@ -42,22 +43,11 @@ def handle_instance(
 
     if on_names:
         for method in on_names:
-            if _check_attr(method, attrs, strict):
-                handle_method(instance, method, reserved_args, arg_env)
+            if check_attr(method, attrs, strict):
+                fill_method(instance, method, reserved_args, arg_env)
         return instance
 
-    no_magic_attrs = [
-        attr for attr in attrs if not (attr.startswith("__") and attr.endswith("__"))
-    ]
-    for method in no_magic_attrs:
-        handle_method(instance, method, reserved_args, arg_env)
+    good_attrs = clear_attrs(attrs)
+    for method in good_attrs:
+        fill_method(instance, method, reserved_args, arg_env)
     return instance
-
-
-def _check_attr(attr: str, total_attrs: list, strict=True):
-    for curr_attr in total_attrs:
-        if strict and attr == curr_attr:
-            return True
-        elif not strict and attr in curr_attr:
-            return True
-    return False

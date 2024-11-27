@@ -1,7 +1,6 @@
-from inspect import signature
-from collections import defaultdict, Iterable
+from .utils import parse_arg_types
 
-kinds_code = {
+INSPECT_CODES = {
     "POSITIONAL_ONLY": "PO",
     "POSITIONAL_OR_KEYWORD": "PK",
     "VAR_POSITIONAL": "VP",
@@ -13,11 +12,11 @@ kinds_code = {
 class ArgsHandler:
     def __init__(self, f, arguments: dict):
         self.default_args = arguments
-        self._types_arg = self.parse_f_types(f)
+        self._types_arg = parse_arg_types(f)
         for key, value in self._types_arg.items():
-            setattr(self, kinds_code[key], value)
+            setattr(self, INSPECT_CODES[key], value)
 
-    def parse_args(self, args: Iterable, kwds: dict):
+    def parse_args(self, args: list, kwds: dict):
         new_args = list(args)
         new_kwds = dict()
 
@@ -63,13 +62,6 @@ class ArgsHandler:
         return new_args, new_kwds
 
     def __getattr__(self, name):
-        if name in kinds_code.values():
+        if name in INSPECT_CODES.values():
             return []
         return super().__getattr__(name)
-
-    @classmethod
-    def parse_f_types(cls, f):
-        args_types = defaultdict(list)
-        for arg in signature(f).parameters.values():
-            args_types[arg.kind.name].append(arg.name)
-        return args_types

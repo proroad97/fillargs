@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from uuid import uuid4
 
 
-class Register:
+class _Register:
     ids = {}
 
     def register(self, instance, overide=False):
@@ -30,11 +30,11 @@ class Register:
             raise (f"Environment with {name} name does not exist ") from exc
 
 
-register = Register()
+_register = _Register()
 
 
 class EnvMeta(type):
-    instances = register
+    instances = _register
 
     def __call__(self, *args, **kwargs):
         __instance = super().__call__(*args, **kwargs)
@@ -61,7 +61,7 @@ class DefaultEnv(ArgEnv):
 
 
 def getenv(name):
-    inst = register._getenv(name)
+    inst = _register._getenv(name)
     return inst
 
 
